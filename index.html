@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AeroOS — Web Browser</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="desktop">
+  <!-- Desktop icons: clicking opens a "window" (tab) -->
+  <div class="desktop-icons">
+    <button class="icon" data-app="home">🌐<span>Start Page</span></button>
+    <button class="icon" data-app="notes">📝<span>Notes</span></button>
+    <button class="icon" data-app="calc">🧮<span>Calculator</span></button>
+    <button class="icon" data-app="terminal">💻<span>Terminal</span></button>
+    <button class="icon" data-app="settings">⚙️<span>Settings</span></button>
+    <button class="icon" data-app="about">ℹ️<span>About</span></button>
+  </div>
+
+  <div class="wallpaper-clock" id="wallClock"></div>
+</div>
+
+<!-- ======================= BROWSER CHROME ======================= -->
+<div id="browser">
+
+  <!-- Window title bar (web-OS style) -->
+  <div id="titlebar">
+    <div class="tb-left">
+      <span class="app-badge">🌐</span>
+      <span id="docTitle">AeroOS Browser</span>
+    </div>
+    <div class="tb-drag"></div>
+    <div class="tb-right winctl">
+      <button id="btnMin"  class="wc" title="Minimize">─</button>
+      <button id="btnMax"  class="wc" title="Maximize / Restore">▢</button>
+      <button id="btnClose" class="wc danger" title="Close browser">✕</button>
+    </div>
+  </div>
+
+  <!-- Tab strip: every open window is a tab here -->
+  <div id="tabstrip">
+    <div id="tabs"></div>
+    <button id="newTabBtn" title="New tab (Ctrl+T)">＋</button>
+  </div>
+
+  <!-- Toolbar / navigation -->
+  <div id="toolbar">
+    <div class="navbtns">
+      <button id="navBack"  title="Back (Alt+←)">←</button>
+      <button id="navFwd"   title="Forward (Alt+→)">→</button>
+      <button id="navReload" title="Reload (Ctrl+R)">⟳</button>
+      <button id="navHome"  title="Home">⌂</button>
+    </div>
+    <div id="omnibox">
+      <span id="siteIcon">🌐</span>
+      <input id="urlbar" type="text" spellcheck="false"
+             placeholder="Search or enter address" autocomplete="off">
+      <button id="goBtn" title="Go">↵</button>
+    </div>
+    <div class="toolbtns">
+      <button id="btnBookmark" title="Bookmark this page">☆</button>
+      <button id="btnMenu" title="Menu">⋮</button>
+    </div>
+  </div>
+
+  <!-- Bookmark bar -->
+  <div id="bookmarks"></div>
+
+  <!-- Menu dropdown -->
+  <div id="menuPopup" class="popup hidden">
+    <button data-menu="newtab">New tab&nbsp;&nbsp;<kbd>Ctrl T</kbd></button>
+    <button data-menu="history">History&nbsp;&nbsp;<kbd>Ctrl H</kbd></button>
+    <button data-menu="downloads">Downloads</button>
+    <button data-menu="fullscreen">Toggle full screen&nbsp;&nbsp;<kbd>F11</kbd></button>
+    <hr>
+    <button data-menu="closewin">Close browser window</button>
+  </div>
+
+  <!-- Content area: one iframe "window" per tab -->
+  <div id="content">
+    <iframe id="pageFrame" name="pageFrame" sandbox="allow-scripts allow-modals allow-same-origin allow-forms allow-popups"></iframe>
+    <div id="loadbar"></div>
+  </div>
+
+  <!-- Status bar -->
+  <div id="statusbar">
+    <span id="statusText">Ready</span>
+    <span id="tabCount"></span>
+  </div>
+</div>
+
+<!-- Minimized-browser dock icon (taskbar) -->
+<div id="dock" class="hidden"><button id="dockBtn" title="Restore AeroOS Browser">🌐 AeroOS</button></div>
+
+<!-- Window manager overlay for the whole browser window -->
+<script src="apps.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

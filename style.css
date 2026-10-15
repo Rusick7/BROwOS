@@ -1,0 +1,205 @@
+/* ============ AeroOS — web-OS browser where windows are tabs ============ */
+:root {
+  --chrome-bg: #1f2430;
+  --chrome-bg2: #2a3040;
+  --tab-active: #3b4252;
+  --tab-hover: #333a4a;
+  --accent: #4f8cff;
+  --text: #dfe6f2;
+  --text-dim: #8b94a8;
+  --border: #12151d;
+  --danger: #e05252;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; font-family: "Segoe UI", system-ui, sans-serif; }
+
+/* ---------- Desktop ---------- */
+#desktop {
+  position: fixed; inset: 0;
+  background: radial-gradient(1200px 700px at 70% 20%, #35507a 0%, #1c2740 45%, #10182b 100%);
+}
+.desktop-icons {
+  position: absolute; top: 20px; left: 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.icon {
+  width: 84px; padding: 10px 4px; border: none; border-radius: 8px;
+  background: transparent; color: #fff; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 26px;
+}
+.icon span { font-size: 11px; text-shadow: 0 1px 3px #000; }
+.icon:hover { background: rgba(255,255,255,.12); }
+.wallpaper-clock {
+  position: absolute; right: 40px; bottom: 40px;
+  font-size: 44px; font-weight: 200; color: rgba(255,255,255,.55);
+  text-shadow: 0 2px 10px rgba(0,0,0,.4); user-select: none;
+}
+
+/* ---------- Browser window (the one OS window; tabs = inner windows) ---------- */
+#browser {
+  position: absolute; inset: 0;            /* maximized by default */
+  display: flex; flex-direction: column;
+  background: var(--chrome-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0,0,0,.55);
+  transition: opacity .18s, transform .18s;
+  min-width: 480px; min-height: 300px;
+}
+body.dragging #browser { transition: none; }
+#browser.float { inset: auto; }   /* un-maximized: positioned via inline styles */
+
+/* Title bar */
+#titlebar {
+  height: 34px; display: flex; align-items: center; gap: 8px;
+  padding: 0 4px 0 10px; background: linear-gradient(#262c3a, #1f2430);
+  cursor: grab; user-select: none; flex: none;
+}
+#titlebar:active { cursor: grabbing; }
+.tb-left { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-dim); white-space: nowrap; overflow: hidden; }
+.app-badge { font-size: 14px; }
+#docTitle { max-width: 40vw; overflow: hidden; text-overflow: ellipsis; }
+.tb-drag { flex: 1; height: 100%; }
+.winctl { display: flex; gap: 2px; }
+.wc {
+  width: 40px; height: 26px; border: none; background: transparent;
+  color: var(--text); cursor: pointer; font-size: 12px; border-radius: 4px;
+}
+.wc:hover { background: rgba(255,255,255,.12); }
+.wc.danger:hover { background: var(--danger); }
+
+/* Tab strip */
+#tabstrip {
+  display: flex; align-items: flex-end; gap: 2px;
+  padding: 6px 8px 0; background: var(--chrome-bg); flex: none;
+  overflow-x: auto; scrollbar-width: thin;
+}
+#tabs { display: flex; gap: 2px; align-items: flex-end; overflow: hidden; }
+.tab {
+  display: flex; align-items: center; gap: 7px;
+  max-width: 220px; min-width: 110px; height: 34px; padding: 0 8px 0 11px;
+  background: var(--chrome-bg2); color: var(--text-dim);
+  border-radius: 9px 9px 0 0; cursor: pointer; font-size: 12.5px;
+  border: 1px solid transparent; border-bottom: none; position: relative;
+  user-select: none;
+}
+.tab:hover { background: var(--tab-hover); color: var(--text); }
+.tab.active {
+  background: var(--tab-active); color: var(--text);
+  border-color: #46506a; box-shadow: 0 -2px 0 var(--accent) inset;
+}
+.tab .fav { font-size: 13px; flex: none; }
+.tab .label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tab .close {
+  flex: none; width: 18px; height: 18px; border: none; border-radius: 50%;
+  background: transparent; color: inherit; cursor: pointer; font-size: 11px; line-height: 1;
+}
+.tab .close:hover { background: rgba(255,255,255,.18); }
+.tab .close.dirty::after { content: ""; }
+.tab.pinned { min-width: 44px; max-width: 44px; padding: 0 4px; justify-content: center; }
+.tab.pinned .label, .tab.pinned .close { display: none; }
+.tab .spinner {
+  flex: none; width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.25); border-top-color: var(--accent);
+  animation: spin .7s linear infinite; display: none;
+}
+.tab.loading .spinner { display: block; }
+.tab.loading .fav { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#newTabBtn {
+  flex: none; width: 32px; height: 30px; margin-left: 2px; border: none;
+  border-radius: 8px; background: transparent; color: var(--text-dim);
+  font-size: 16px; cursor: pointer;
+}
+#newTabBtn:hover { background: var(--tab-hover); color: var(--text); }
+
+/* Toolbar */
+#toolbar {
+  display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+  background: var(--tab-active); border-top: 1px solid #46506a; flex: none;
+}
+.navbtns, .toolbtns { display: flex; gap: 2px; }
+.navbtns button, .toolbtns button {
+  width: 32px; height: 32px; border: none; border-radius: 6px;
+  background: transparent; color: var(--text); font-size: 16px; cursor: pointer;
+}
+.navbtns button:hover, .toolbtns button:hover { background: rgba(255,255,255,.12); }
+.navbtns button:disabled { color: #556; cursor: default; background: transparent; }
+#omnibox {
+  flex: 1; display: flex; align-items: center; gap: 8px; height: 34px;
+  background: #171b24; border: 1px solid #3a4254; border-radius: 17px; padding: 0 6px 0 12px;
+}
+#omnibox:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,140,255,.25); }
+#siteIcon { font-size: 14px; }
+#urlbar {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 13.5px;
+}
+#goBtn { width: 26px; height: 26px; border: none; border-radius: 50%; background: transparent; color: var(--text-dim); cursor: pointer; }
+#goBtn:hover { background: rgba(255,255,255,.1); }
+
+/* Bookmark bar */
+#bookmarks {
+  display: flex; gap: 2px; align-items: center; padding: 4px 10px;
+  background: #353c4e; border-bottom: 1px solid var(--border);
+  overflow-x: auto; flex: none; scrollbar-width: none; min-height: 30px;
+}
+#bookmarks:empty::before { content: "★ Bookmarks bar is empty"; color: #6b7488; font-size: 11.5px; }
+.bm {
+  display: flex; align-items: center; gap: 6px; padding: 4px 10px; border: none;
+  border-radius: 6px; background: transparent; color: var(--text);
+  font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+.bm:hover { background: rgba(255,255,255,.12); }
+.bm .x { margin-left: 2px; opacity: .5; }
+.bm .x:hover { opacity: 1; color: var(--danger); }
+
+/* Popups */
+.popup {
+  position: absolute; z-index: 50; min-width: 240px;
+  background: #262b38; border: 1px solid #454d61; border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.5); padding: 6px; 
+}
+.popup.hidden { display: none; }
+.popup button {
+  display: flex; justify-content: space-between; width: 100%; gap: 20px;
+  padding: 8px 10px; border: none; border-radius: 6px; background: transparent;
+  color: var(--text); font-size: 13px; cursor: pointer; text-align: left;
+}
+.popup button:hover { background: var(--accent); }
+.popup kbd { color: var(--text-dim); font-family: inherit; font-size: 11px; }
+.popup hr { border: none; border-top: 1px solid #454d61; margin: 5px 4px; }
+.popup .list-item small { display: block; color: var(--text-dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
+
+/* Content / viewport of the "window" */
+#content { flex: 1; position: relative; background: #fff; overflow: hidden; }
+#pageFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: #fff; }
+#loadbar {
+  position: absolute; top: 0; left: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--accent), #7db4ff);
+  opacity: 0; transition: width .3s, opacity .3s; z-index: 5;
+}
+#loadbar.on { opacity: 1; width: 70%; }
+#loadbar.done { opacity: 0; width: 100%; transition: width .25s ease-out, opacity .4s .15s; }
+
+/* Status bar */
+#statusbar {
+  height: 24px; flex: none; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 12px; background: var(--chrome-bg); border-top: 1px solid var(--border);
+  color: var(--text-dim); font-size: 11.5px; user-select: none;
+}
+
+/* Dock (minimize state) */
+#dock { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 100; }
+#dock.hidden { display: none; }
+#dockBtn {
+  padding: 10px 22px; border-radius: 24px; border: 1px solid #46506a;
+  background: rgba(31,36,48,.85); backdrop-filter: blur(8px);
+  color: var(--text); font-size: 14px; cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+#dockBtn:hover { background: rgba(59,66,82,.95); }
+
+/* Closed state */
+#browser.closed { opacity: 0; transform: scale(.92); pointer-events: none; }
