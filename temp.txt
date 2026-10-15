@@ -1,2 +1,4 @@
 Сохраняй сюда все итоги и отчеты, используй как памятку, что куда писал, сохранял и т.д.
 
+
+[2026-10-16] Created AeroOS web-OS browser in /workspace: index.html, style.css, apps.js, main.js, README.md. Committed to git. Verified with node --check + jsdom DOM tests (tabs open/close/switch, per-tab history, omnibox search, bookmarks, context menu duplicate, drag reorder, minimize/restore).
