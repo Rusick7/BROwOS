@@ -7,22 +7,36 @@ but turned inside-out: here, "window management" *is* tab management.
 
 ## Run it
 
-No build step, no dependencies — plain HTML/CSS/JS:
+The browser shell is written in **Rust and compiled to WebAssembly** (`pkg/`).
+Open `index.html` via a local web server (WASM needs HTTP, not file://):
 
 ```bash
 python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
-(or just open `index.html` directly)
+### Rebuilding the WASM shell
+
+```bash
+cd wasm-shell
+cargo build --release --target wasm32-unknown-unknown
+wasm-bindgen --target no-modules --out-dir ../pkg \
+    target/wasm32-unknown-unknown/release/wasm_shell.wasm
+node ../patch_glue.js          # small compatibility patch for the generated glue
+node ../test_wasm.js           # end-to-end jsdom smoke test
+cargo test                     # unit tests (omnibox, titles, app rendering)
+```
 
 ## Files
 
-| File          | Purpose                                                        |
-|---------------|----------------------------------------------------------------|
-| `index.html`  | Desktop + browser chrome (titlebar, tab strip, toolbar, status bar) |
-| `style.css`   | OS/desktop styling, dark browser chrome                        |
-| `apps.js`     | Built-in apps (Start, Notes, Calculator, Terminal, Settings, About, Search & error pages) rendered into tabs via `srcdoc` |
-| `main.js`     | Browser shell: tab/window manager, per-tab history stack, omnibox, bookmarks, popups, keyboard shortcuts, window controls |
+| File              | Purpose                                                        |
+|-------------------|----------------------------------------------------------------|
+| `index.html`      | Desktop + browser chrome markup; boots the Rust/WASM shell     |
+| `style.css`       | OS/desktop styling, dark browser chrome                        |
+| `wasm-shell/`     | **Rust source**: `src/lib.rs` (tab-window manager, per-tab history, omnibox, bookmarks, hotkeys, iframe bridge) and `src/apps.rs` (built-in apps: Start, Notes, Calculator, Terminal, Settings, About, Search & error pages) |
+| `pkg/`            | Compiled WASM bundle + JS glue (`wasm-bindgen --target no-modules`) |
+| `patch_glue.js`   | Post-build patch making the glue accept a precompiled Module   |
+| `test_wasm.js`    | jsdom integration test driving the real WASM binary            |
+| `main.js`, `apps.js` | Original pure-JS implementation, kept as reference          |
 
 ## Features
 

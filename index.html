@@ -78,6 +78,9 @@
     <button data-menu="closewin">Close browser window</button>
   </div>
 
+  <!-- History dropdown (populated by the Rust shell) -->
+  <div id="histPopup" class="popup hidden"></div>
+
   <!-- Content area: one iframe "window" per tab -->
   <div id="content">
     <iframe id="pageFrame" name="pageFrame" sandbox="allow-scripts allow-modals allow-same-origin allow-forms allow-popups"></iframe>
@@ -95,7 +98,7 @@
 <div id="dock" class="hidden"><button id="dockBtn" title="Restore AeroOS Browser">🌐 AeroOS</button></div>
 
 <!-- Window manager overlay for the whole browser window -->
-<script src="apps.js"></script>
-<script src="main.js"></script>
+<script src="pkg/wasm_shell.js"></script>
+<script>window.wasm_bindgen("pkg/wasm_shell_bg.wasm").then(m => { window.shell = new m.Shell(); window.shell.boot(); }).catch(e => console.error("WASM boot failed:", e));</script>
 </body>
 </html>
